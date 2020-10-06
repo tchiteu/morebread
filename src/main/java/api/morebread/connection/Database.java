@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class MysqlConnector {
+public class Database {
+  // TESTE DE CONEXÃO
   public static void main(String[] args) {
     Connection test = getConnection();
     System.out.println(test);

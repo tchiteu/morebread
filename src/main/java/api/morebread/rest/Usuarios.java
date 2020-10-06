@@ -1,10 +1,10 @@
 package api.morebread.rest;
 
+import java.util.ArrayList;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.Produces;
-// import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 
 import api.morebread.model.Usuario;
@@ -15,9 +15,9 @@ public class Usuarios {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/")
-	public Usuario legal(String msg) {
-		Usuario retorno = UsuariosController.cadastraUsuario("Mat","Mat","Mat","Mat");
+	public ArrayList<Usuario> buscaTodos() {
+		ArrayList<Usuario> usuarios = UsuariosController.buscaTodos();
 
-		return retorno;
+		return usuarios;
 	}
 }
