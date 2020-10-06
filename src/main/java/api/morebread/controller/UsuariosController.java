@@ -1,36 +1,42 @@
 package api.morebread.controller;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.ws.rs.core.Response;
+
+import api.morebread.connection.ConnectionFactory;
 import api.morebread.model.Usuario;
-import api.morebread.connection.Database;
 
 public class UsuariosController {
-  // public static void main(String[] args) {
-  //   Connection conexao = Database.getConnection();
-  //   String query = "SELECT * FROM usuarios";
+  public static void main(String[] args) {
+    Connection conexao = ConnectionFactory.getConnection();
+    String query = "SELECT * FROM usuarios";
     
-  //   catch(SQLException ex) {
-  //     System.out.println("SQLException: " + ex.getMessage(String query = "SELECT * FROM usuarios";));
-  //     System.out.println("SQLState: " + ex.getSQLState());
-  //     System.out.println("VendorError: " + ex.getErrorCode());
-  //   }
-  // }
+    catch(SQLException ex) {
+      System.out.println("SQLException: " + ex.getMessage(String query = "SELECT * FROM usuarios";));
+      System.out.println("SQLState: " + ex.getSQLState());
+      System.out.println("VendorError: " + ex.getErrorCode());
+    }
+    buscaTodos();
+  }
 
-  public static ArrayList<Usuario> buscaTodos() {
-    Connection conexao = Database.getConnection();
+  public static Response buscaTodos() {
+    Connection conexao = ConnectionFactory.getConnection();
     
-    ArrayList<Usuario> usuarios = new ArrayList<>();
+    List<Usuario> usuarios = new ArrayList<Usuario>();
     
     try {
-      String query = "SELECT * FROM usuarios";
+      String query = "SELECT * FROM usuarios;";
+      ResultSet result = null;
 
-      Statement statement = conexao.createStatement();
-      ResultSet result = statement.executeQuery(query);
+      PreparedStatement ps = conexao.prepareStatement(query);
+      
+      result = ps.executeQuery();
 
       while(result.next()) {
         Usuario usuario = new Usuario();
@@ -40,15 +46,21 @@ public class UsuariosController {
         usuario.setCargo(result.getString("cargo"));
         usuario.setEmail(result.getString("email"));
 
+        System.out.println(result.getString("nome"));
+
         usuarios.add(usuario);
       }
+
+      result.close();
+      ps.close();
+      conexao.close();
     } 
     catch(SQLException ex) {
       System.out.println("SQLException: " + ex.getMessage());
       System.out.println("SQLState: " + ex.getSQLState());
       System.out.println("VendorError: " + ex.getErrorCode());
     }
-
-    return usuarios;
+    
+    return Response.status(200).entity(usuarios).build();
   }
 }
