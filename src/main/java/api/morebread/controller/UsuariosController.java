@@ -13,15 +13,7 @@ import api.morebread.connection.ConnectionFactory;
 import api.morebread.model.Usuario;
 
 public class UsuariosController {
-  public static void main(String[] args) {
-    Connection conexao = ConnectionFactory.getConnection();
-    String query = "SELECT * FROM usuarios";
-    
-    catch(SQLException ex) {
-      System.out.println("SQLException: " + ex.getMessage(String query = "SELECT * FROM usuarios";));
-      System.out.println("SQLState: " + ex.getSQLState());
-      System.out.println("VendorError: " + ex.getErrorCode());
-    }
+  public static void main(String[] args) {    
     buscaTodos();
   }
 

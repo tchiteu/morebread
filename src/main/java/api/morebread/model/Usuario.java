@@ -28,7 +28,7 @@ public class Usuario {
     this.email = email;
   }
 
-  public String getEmail() {// TESTE DE CONEXÃO
+  public String getEmail() {
     return email;
   }
 
