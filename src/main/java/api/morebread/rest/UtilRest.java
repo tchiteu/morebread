@@ -7,9 +7,14 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 public class UtilRest {
 	public class CustomJson {
 		public String msg;
+		public Object data;
 		
 		public CustomJson(String msg) {
 			this.msg = msg;
+		}
+
+		public CustomJson(Object data) {
+			this.data = data;
 		}
 	}
 
