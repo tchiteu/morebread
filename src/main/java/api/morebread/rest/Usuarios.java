@@ -20,10 +20,10 @@ public class Usuarios extends UtilRest {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 
 		if(usuarioDAO.create(usuario)) {
-			return this.buildResponse("Teste String Sucesso");
+			return this.buildResponse("Usuário cadastrado com sucesso.");
 		}
 		else {
-			return this.buildErrorResponse("Erro ao cadastrar usuário");
+			return this.buildErrorResponse("Erro ao cadastrar usuário.");
 		}
 	}
 }
