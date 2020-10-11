@@ -11,7 +11,7 @@ public class ConnectionFactory {
     Connection conexao = null;
     
     try {
-      conexao = DriverManager.getConnection("jdbc:mysql://localhost/padaria?user=root&password=root");
+      conexao = DriverManager.getConnection("jdbc:mysql://localhost/padaria","root","root");
     } catch (SQLException ex) {
       // Manipulando erros
       throw new RuntimeException("Erro ao se conectar ao banco de dados", ex);
