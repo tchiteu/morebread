@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -35,5 +36,20 @@ public class Usuarios extends UtilRest {
 		List<Usuario> usuarios = usuarioDAO.busca();
 		
 		return this.buildResponse(usuarios);
+	}
+
+	@GET
+	@Path("/{id}")
+	public Response buscaPorId(@PathParam("id") int id) {
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		
+		Usuario usuario = usuarioDAO.buscaPorId(id);
+
+		if(usuario.getNome() != null) {
+			return this.buildResponse(usuario);
+		}
+		else {
+			return this.buildErrorResponse("Usuário não encontrado.");
+		}
 	}
 }

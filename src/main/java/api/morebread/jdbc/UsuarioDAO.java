@@ -11,7 +11,6 @@ import api.morebread.model.Usuario;
 import api.morebread.connection.ConnectionFactory;
 
 public class UsuarioDAO {
-
   public Boolean cadastra(Usuario usuario) {
     Connection conexao = ConnectionFactory.getConnection();
 
@@ -49,9 +48,9 @@ public class UsuarioDAO {
       stmt = conexao.prepareStatement("SELECT id, nome, email, cargo FROM usuarios");
       ResultSet resultado = stmt.executeQuery();
 
-      while(resultado.next()) {
+      while (resultado.next()) {
         Usuario usuario = new Usuario();
-        
+
         usuario.setId(resultado.getInt("id"));
         usuario.setNome(resultado.getString("nome"));
         usuario.setEmail(resultado.getString("email"));
@@ -60,10 +59,35 @@ public class UsuarioDAO {
         usuarios.add(usuario);
       }
 
-    } catch(SQLException ex) {
+    } catch (SQLException ex) {
       ex.printStackTrace();
     }
 
     return usuarios;
+  }
+
+  public Usuario buscaPorId(int id) {
+    Connection conexao = ConnectionFactory.getConnection();
+    Usuario usuario = new Usuario();
+    
+    PreparedStatement stmt = null;
+
+    try {
+      stmt = conexao.prepareStatement("SELECT id, nome, email, cargo FROM usuarios WHERE id = ?");
+      stmt.setInt(1, id);
+      ResultSet resultado = stmt.executeQuery();
+
+      if(resultado.next()) {
+        usuario.setId(resultado.getInt("id"));
+        usuario.setNome(resultado.getString("nome"));
+        usuario.setEmail(resultado.getString("email"));
+        usuario.setCargo(resultado.getString("cargo"));
+      }
+
+    } catch(SQLException ex) {
+      ex.printStackTrace();
+    }
+
+    return usuario;
   }
 }
