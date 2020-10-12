@@ -1,18 +1,20 @@
 package api.morebread.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 public class Usuario {
-  private Long id;
+  private int id;
   
   private String nome;
   private String email;
 	private String cargo;
 	private String senha;
 
-  public void setId(Long id) {
+  public void setId(int id) {
     this.id = id;
   }
 
-  public Long getId() {
+  public int getId() {
     return this.id;
   }
 
@@ -44,6 +46,7 @@ public class Usuario {
     this.senha = senha;
   }
 
+  @JsonIgnore
   public String getSenha() {
     return this.senha;
   }
