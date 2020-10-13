@@ -26,8 +26,6 @@ public class UsuarioDAO {
       stmt.setString(4, usuario.getSenha());
 
       stmt.executeUpdate();
-
-      System.out.println("Salvo com sucesso");
       retorno = true;
     } catch (SQLException ex) {
       ex.printStackTrace();
@@ -38,7 +36,7 @@ public class UsuarioDAO {
     return retorno;
   }
 
-  public List<Usuario> busca() {
+  public List<Usuario> buscar() {
     Connection conexao = ConnectionFactory.getConnection();
     PreparedStatement stmt = null;
 
@@ -61,12 +59,14 @@ public class UsuarioDAO {
 
     } catch (SQLException ex) {
       ex.printStackTrace();
+    } finally {
+      ConnectionFactory.closeConnection(conexao, stmt);
     }
 
     return usuarios;
   }
 
-  public Usuario buscaPorId(int id) {
+  public Usuario buscarPorId(int id) {
     Connection conexao = ConnectionFactory.getConnection();
     Usuario usuario = new Usuario();
     
@@ -86,8 +86,65 @@ public class UsuarioDAO {
 
     } catch(SQLException ex) {
       ex.printStackTrace();
+    } finally {
+      ConnectionFactory.closeConnection(conexao, stmt);
     }
 
     return usuario;
+  }
+
+  public Boolean editar(int id, Usuario usuario) {
+    Connection conexao = ConnectionFactory.getConnection();
+    PreparedStatement stmt = null;
+
+    Boolean retorno = false;
+
+    if(buscarPorId(id).getNome() == null) {
+      return false;
+    }
+
+    try {
+      stmt = conexao.prepareStatement("UPDATE usuarios SET nome = ?, email = ?, cargo = ? WHERE id = ?");
+      stmt.setString(1, usuario.getNome());
+      stmt.setString(2, usuario.getEmail());
+      stmt.setString(3, usuario.getCargo());
+      stmt.setInt(4, id);
+
+      stmt.executeUpdate();
+      retorno = true;
+    } catch (SQLException ex) {
+      ex.printStackTrace();
+      retorno = false;
+    } finally {
+      ConnectionFactory.closeConnection(conexao, stmt);
+    }
+
+    return retorno;
+  }
+
+  public Boolean deletar(int id) {
+    Connection conexao = ConnectionFactory.getConnection();
+
+    PreparedStatement stmt = null;
+    Boolean retorno = false;
+
+    if(buscarPorId(id).getNome() == null) {
+      return false;
+    }
+
+    try {
+      stmt = conexao.prepareStatement("DELETE FROM usuarios WHERE id = ?");
+      stmt.setInt(1, id);
+
+      stmt.executeUpdate();
+      retorno = true;
+    } catch(SQLException ex) {
+      ex.printStackTrace();
+      retorno = false;
+    } finally {
+      ConnectionFactory.closeConnection(conexao, stmt);
+    }
+
+    return retorno;
   }
 }
