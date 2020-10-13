@@ -121,4 +121,30 @@ public class UsuarioDAO {
 
     return retorno;
   }
+
+  public Boolean deletar(int id) {
+    Connection conexao = ConnectionFactory.getConnection();
+
+    PreparedStatement stmt = null;
+    Boolean retorno = false;
+
+    if(buscarPorId(id).getNome() == null) {
+      return false;
+    }
+
+    try {
+      stmt = conexao.prepareStatement("DELETE FROM usuarios WHERE id = ?");
+      stmt.setInt(1, id);
+
+      stmt.executeUpdate();
+      retorno = true;
+    } catch(SQLException ex) {
+      ex.printStackTrace();
+      retorno = false;
+    } finally {
+      ConnectionFactory.closeConnection(conexao, stmt);
+    }
+
+    return retorno;
+  }
 }

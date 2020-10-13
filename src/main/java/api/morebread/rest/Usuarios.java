@@ -3,6 +3,7 @@ package api.morebread.rest;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -63,6 +64,18 @@ public class Usuarios extends UtilRest {
 			return this.buildResponse("Usuário editado com sucesso");
 		} else {
 			return this.buildErrorResponse("Erro ao editar usuário.");
+		}
+	}
+
+	@DELETE
+	@Path("/{id}")
+	public Response deletar(@PathParam("id") int id) {
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+
+		if(usuarioDAO.deletar(id)) {
+			return this.buildResponse("Usuário deletado.");
+		} else {
+			return this.buildErrorResponse("Erro ao deletar usuário.");
 		}
 	}
 }
