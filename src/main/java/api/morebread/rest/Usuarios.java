@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -31,25 +32,37 @@ public class Usuarios extends UtilRest {
 	}
 
 	@GET
-	public Response buscaTodos() {
+	public Response buscarTodos() {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		List<Usuario> usuarios = usuarioDAO.busca();
+		List<Usuario> usuarios = usuarioDAO.buscar();
 		
 		return this.buildResponse(usuarios);
 	}
 
 	@GET
 	@Path("/{id}")
-	public Response buscaPorId(@PathParam("id") int id) {
+	public Response buscarPorId(@PathParam("id") int id) {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		
-		Usuario usuario = usuarioDAO.buscaPorId(id);
+		Usuario usuario = usuarioDAO.buscarPorId(id);
 
 		if(usuario.getNome() != null) {
 			return this.buildResponse(usuario);
 		}
 		else {
 			return this.buildErrorResponse("Usuário não encontrado.");
+		}
+	}
+
+	@PUT
+	@Path("/{id}")
+	public Response editar(@PathParam("id") int id, Usuario usuario) {
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		
+		if(usuarioDAO.editar(id, usuario)) {
+			return this.buildResponse("Usuário editado com sucesso");
+		} else {
+			return this.buildErrorResponse("Erro ao editar usuário.");
 		}
 	}
 }
