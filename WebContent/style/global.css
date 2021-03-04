@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,900;1,300&display=swap');
+
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
+.custom-border {
+  border-top: solid 4px #dca66e !important;
+}
+
+.fecha-editar {
+  right: 8px;
+  position: absolute;
+  font-size: 25px;
+  top: 4px;
+  cursor: pointer;
+}
+
+.m-header {
+  display: flex;
+  width: 100vw;
+  padding: 10px;
+  background-color: #dca66e;
+  border-bottom: 5px solid #e6ba8c;
+  align-items: center;
+}
+.m-header img {
+  width: 45px;
+  margin-right: 6px;
+}
+.m-header h2 {
+  color: #e6ba8c;
+  text-shadow: 2px 0 0 #0f0f0f,
+  -2px 0 0 #0f0f0f,
+  0 2px 0 #0f0f0f,
+  0 -2px 0 #0f0f0f,
+  1px 1px #0f0f0f,
+  -1px -1px 0 #0f0f0f,
+  1px -1px 0 #0f0f0f,
+  -1px 1px 0 #0f0f0f;
+}
+
+.container-login {
+  width: 335px;
+  padding: 20px;
+  left: 50%;
+  top: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.form-login {
+  border-top: solid 2px #291919;
+}
