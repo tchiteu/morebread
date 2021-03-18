@@ -23,8 +23,10 @@ public class UtilRest {
 	
 	public Response buildResponse(int status_code, String mensagem) {
 	  try {
+		Retorno retorno = new Retorno(status_code, mensagem);
 		ResponseBuilder response = Response.status(status_code);
-		response = response.entity(mensagem);
+		retorno.toResponse();
+		response = response.entity(retorno);
 		
 		return response.build();
 	  }
@@ -37,9 +39,9 @@ public class UtilRest {
 	}
 	
 	public Response buildErrorResponse(int status_code, String mensagem) {
-	  ResponseBuilder response = Response.status(status_code);
-	  Retorno retorno = new Retorno(mensagem);
-	  response = response.entity(retorno);
+		ResponseBuilder response = Response.status(status_code);
+		Retorno retorno = new Retorno(mensagem);
+		response = response.entity(retorno);
 	
 	  return response.build();
 	}

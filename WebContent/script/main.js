@@ -1,5 +1,6 @@
 import Login from '../pages/login/index.js';
 import Usuarios from '../pages/usuarios/index.js';
+import Produtos from '../pages/produtos/index.js';
 
 axios.defaults.baseURL = 'http://localhost:8080/morebread/rest';
 
@@ -13,7 +14,8 @@ axios.interceptors.request.use((config) => {
 const router = new VueRouter({
   routes: [
 		{ path: '/login', component: Login },
-		{ path: '/usuarios', component: Usuarios }
+		{ path: '/usuarios', component: Usuarios },
+		{ path: '/produtos', component: Produtos }
   ]
 })
 
@@ -22,6 +24,7 @@ import Header from '../components/general/Header.js';
 Vue.component('m-header', Header);
 
 Vue.use(Toasted)
+Vue.use(VueCurrencyInput)
 
 Vue.toasted.register('error',
 	(payload) => {
@@ -42,6 +45,15 @@ Vue.toasted.register('success',
 		duration: 3000
 	}
 )
+
+// Prototypes
+String.prototype.insert = function(index, string) {
+  if (index > 0) {
+    return this.substring(0, index) + string + this.substr(index);
+  }
+
+  return string + this;
+};
 
 new Vue({
 	router,

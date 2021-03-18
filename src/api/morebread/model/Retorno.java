@@ -10,6 +10,7 @@ public class Retorno {
   private String token;
 
   private List<Usuario> usuarios;
+  private List<Produto> produtos;
   private Usuario usuario;
 
   public Retorno (Integer status) {
@@ -58,6 +59,10 @@ public class Retorno {
     this.usuarios = usuarios;
   }
   
+  public void setProdutos(List<Produto> produtos) {
+	this.produtos = produtos;
+  }
+  
   public void setUsuario(Usuario usuario) {
 	this.usuario = usuario;
   }
@@ -81,6 +86,10 @@ public class Retorno {
 
   public List<Usuario> getUsuarios() {
     return this.usuarios;
+  }
+  
+  public List<Produto> getProdutos() {
+    return this.produtos;
   }
   
   public Usuario getUsuario() {

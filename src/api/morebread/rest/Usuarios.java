@@ -33,7 +33,7 @@ public class Usuarios extends UtilRest {
 		
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-		if(usuarioDAO.cadastra(usuario)) {
+		if(usuarioDAO.cadastrar(usuario)) {
 			return this.buildResponse(201, "Usuário cadastrado com sucesso");
 		}
 		else {

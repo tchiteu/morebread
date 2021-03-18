@@ -13,7 +13,7 @@ import api.morebread.model.Usuario;
 import api.morebread.connection.ConnectionFactory;
 
 public class UsuarioDAO {
-  public Boolean cadastra(Usuario usuario) {
+  public Boolean cadastrar(Usuario usuario) {
     Connection conexao = ConnectionFactory.getConnection();
 
     Boolean retorno = false;

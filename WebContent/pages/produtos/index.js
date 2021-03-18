@@ -6,12 +6,12 @@ const template = /*html*/ `
       <!-- TABELA -->
       <v-col cols="8">
         <v-card class="pa-8 text-left custom-border" tile>
-          <h3 class="mb-8">Lista de usuários</h3>
+          <h3 class="mb-8">Lista de produtos</h3>
 
           <v-data-table 
             class="elevation-2"
             :headers="headers"
-            :items="usuarios"
+            :items="produtos"
             :loading="loading"
             disable-sort
             hide-default-footer
@@ -29,7 +29,7 @@ const template = /*html*/ `
                 </template>
 
                 <v-list :key="item.id">
-                  <v-list-item @click="deletaUsuario(item.id)">
+                  <v-list-item @click="deletaProduto(item.id)">
                     <v-list-item-title >Deletar</v-list-item-title>
                   </v-list-item>
 
@@ -46,43 +46,37 @@ const template = /*html*/ `
       <!-- CADASTRO -->
       <v-col v-if="!editar" cols="4">
         <v-card class="pa-8 text-left custom-border" tile>
-          <h3 class="mb-8">Cadastrar usuário</h3>
+          <h3 class="mb-8">Cadastrar produto</h3>
 
           <v-form ref="formCadastro">
-            <v-text-field
-              v-model="nome"
-              label="Nome completo"
-              :rules="[campoObrigatorio]"
-              placeholder=" "
-            />
+						<v-text-field
+							v-model="nome"
+							label="Nome"
+							:rules="[campoObrigatorio]"
+							placeholder="  "
+						/>
 
-            <v-text-field
-              v-model="email"
-              label="E-mail"
-              :rules="[campoObrigatorio]"
-              placeholder=" "
-            />
-            
-            <v-select
-              v-model="cargo"
-              label="Cargo"
-              :rules="[campoObrigatorio]"
-              :items="['Atendente', 'Padeiro', 'Gerente']"
-            />
+						<v-text-field
+							v-model="valor"
+							label="Valor"
+							:rules="[campoObrigatorio]"
+							placeholder="  "
+							v-currency="{ currency: null,locale: 'pt',autoDecimalMode: true }"
+						/>
 
-            <v-text-field
-              type="password"
-              v-model="senha"
-              :rules="[campoObrigatorio]"
-              label="Senha"
-              placeholder=" "
-            />
+						<v-text-field
+							type="number"
+							v-model="quantidade"
+							label="Quantidade"
+							:rules="[campoObrigatorio]"
+							placeholder="  "
+						/>
           </v-form>
 
           <v-btn
             :loading="loadingBtn"
             block
-            @click="cadastraUsuario"
+            @click="cadastraProduto"
             color="success"btn
           >Cadastrar</v-btn>
         </v-card>
@@ -92,44 +86,39 @@ const template = /*html*/ `
       <v-col v-else cols="4">
         <v-card class="pa-8 text-left custom-border" tile>
           <span @click="voltar()" class="mdi mdi-close fecha-editar"></span>
-          <h3 class="mb-8">Editar usuário</h3>
+          <h3 class="mb-8">Editar produto</h3>
 
           <v-form ref="formEditar">
-            <v-text-field
-              v-model="nome"
-              label="Nome completo"
-              :rules="[campoObrigatorio]"
-              placeholder=" "
-            />
+						<v-text-field
+							v-model="nome"
+							label="Nome"
+							:rules="[campoObrigatorio]"
+							placeholder="  "
+						/>
 
-            <v-text-field
-              v-model="email"
-              label="E-mail"
-              :rules="[campoObrigatorio]"
-              placeholder=" "
-            />
-            
-            <v-select
-              v-model="cargo"
-              label="Cargo"
-              :rules="[campoObrigatorio]"
-              :items="['Atendente', 'Padeiro', 'Gerente']"
-            />
+						<v-text-field
+							v-model="valor"
+							label="Valor"
+							:rules="[campoObrigatorio]"
+							placeholder="  "
+							v-currency="{ currency: null,locale: 'pt',autoDecimalMode: true }"
+						/>
 
-            <v-text-field
-              type="password"
-              v-model="senha"
-              label="Senha"
-              placeholder=" "
-            />
-          </v-form>
+						<v-text-field
+							type="number"
+							v-model="quantidade"
+							label="Quantidade"
+							:rules="[campoObrigatorio]"
+							placeholder="  "
+						/>
+					</v-form>
 
-          <v-btn
-            :loading="loadingBtn"
-            block
-            @click="editaUsuario"
-            color="success"
-          >Editar</v-btn>
+					<v-btn
+						:loading="loadingBtn"
+						block
+						@click="editaProduto"
+						color="success"
+					>Editar</v-btn>
         </v-card>
       </v-col>
     </v-row>
@@ -140,17 +129,16 @@ export default {
 	template,
 
 	data: () => ({
-		usuarios: [],
+		produtos: [],
 		nome: "",
-		email: "",
-		cargo: "",
-		senha: "",
+		valor: 0.00,
+		quantidade: 1,
 
 		headers: [
 			{ text: "ID", value: "id" },
 			{ text: "Nome", value: "nome" },
-			{ text: "E-mail", value: "email" },
-			{ text: "Cargo", value: "cargo" },
+			{ text: "Valor", value: "valor_formatado" },
+			{ text: "Quantidade", value: "quantidade" },
 			{ text: "Ações", value: "acoes", width: "7%" }
 		],
 
@@ -165,41 +153,58 @@ export default {
 	}),
 
 	mounted() {
-		this.buscaUsuarios();
+		this.buscaProdutos();
 	},
 
 	methods: {
-		async buscaUsuarios() {
+		async buscaProdutos() {
 			this.loading = true;
 
-			await axios.get("/usuarios")
+			await axios.get("/produtos")
 			.then(retorno => {
-        this.usuarios = retorno.data.usuarios;
+				let produtos = retorno.data.produtos;
+
+				this.produtos = produtos.map(produto => {
+					let valor = produto.valor.toFixed(2).toString();
+					valor = valor.replace(".", ",");
+					
+					if (produto.valor > 9999) {
+						valor = valor.insert(2, ".");
+					}
+ 					else if (produto.valor > 999) {
+						valor = valor.insert(1, ".");
+					}
+
+					produto.valor_formatado = `R$ ${valor}`;
+					return produto;
+				})
 			})
 			.catch(err => {
-				this.$toast.erro("Erro ao buscar usuários.");
+				this.$toasted.error("Erro ao buscar produtos");
 			})
 			.finally(this.loading = false)
 		},
 
-		async cadastraUsuario() {
+		async cadastraProduto() {
 			if(!this.$refs.formCadastro.validate()){
 				return false;
 			}
 			this.loadingBtn = true;
 
-			const {nome, email, cargo, senha} = this; 
+			let { nome, valor, quantidade } = this; 
+
+			valor = valor.replace(".", "");
+			valor = valor.replace(",", ".");
 
 			const body = {
 				nome,
-				email,
-				cargo,
-				senha
+				valor: parseFloat(valor).toFixed(2),
+				quantidade: parseInt(quantidade)
 			}
 
-			await axios.post("/usuarios", body)
+			await axios.post("/produtos", body)
 				.then(() => {
-					this.buscaUsuarios();
+					this.buscaProdutos();
 					this.$refs.formCadastro.reset();
 				})
 				.catch(() => {
@@ -210,11 +215,11 @@ export default {
 				})
 		},
 
-		async deletaUsuario(id) {
-			await axios.delete(`/usuarios/${id}`)
+		async deletaProduto(id) {
+			await axios.delete(`/produtos/${id}`)
 				.then(retorno => {
 					if(retorno) {
-						this.buscaUsuarios();
+						this.buscaProdutos();
 					}
 				})
 				.catch(err => {
@@ -222,26 +227,28 @@ export default {
 				})
 		},
 
-		async editaUsuario() {
+		async editaProduto() {
 			if(!this.$refs.formEditar.validate()){
 				return false;
 			}
 			this.loadingBtn = true;
 
-			const {nome, email, cargo, senha} = this; 
+			let { nome, valor, quantidade } = this; 
+
+			valor = valor.replace(".", "");
+			valor = valor.replace(",", ".");
 
 			const body = {
 				nome,
-				email,
-				cargo,
-				senha
+				valor: parseFloat(valor).toFixed(2),
+				quantidade: parseInt(quantidade)
 			}
 
-			await axios.put(`/usuarios/${this.editar_id}`, body)
+			await axios.put(`/produtos/${this.editar_id}`, body)
 				.then(retorno => {
 					if(retorno) {
-						this.buscaUsuarios();
-						this.editar = false;
+						this.buscaProdutos();
+						this.voltar();
 					}
 				})
 				.catch(err => {
@@ -255,19 +262,22 @@ export default {
 				this.editar_id = id;
 				this.editar = true;
 
-				const usuarioEditar = this.usuarios.find(usuario => {
-					return usuario.id == id;
+				const produtoEditar = this.produtos.find(produto => {
+					return produto.id == id;
 				})
 
-				this.nome = usuarioEditar.nome;
-				this.email = usuarioEditar.email;
-				this.cargo = usuarioEditar.cargo;
-				this.senha = usuarioEditar.senha;
+				this.nome = produtoEditar.nome;
+				this.valor = produtoEditar.valor;
+				this.quantidade = produtoEditar.quantidade;
 			}
 		},
 
 		async voltar() {
 			this.editar = false;
+			setTimeout(() => {
+				this.$refs.formCadastro.reset();
+				this.$refs.formCadastro.resetValidation();
+			}, 500)
 		}
 	}
 }
