@@ -53,29 +53,7 @@ public class Produtos extends UtilRest {
 		
 		return this.buildResponse(retorno);
 	}
-//
-//	@GET
-//	@Path("/{id}")
-//	public Response buscarPorId(@PathParam("id") int id, @Context HttpHeaders httpheaders) {
-//		if (!authDAO.verificaToken(httpheaders.getHeaderString("Authorization"))) {
-//			return this.unauthorizedResponse();
-//		}
-//		
-//		UsuarioDAO usuarioDAO = new UsuarioDAO();
-//		
-//		Usuario usuario = usuarioDAO.buscarPorId(id);
-//
-//		if(usuario.getNome() != null) {
-//			Retorno retorno = new Retorno(200);
-//			retorno.setUsuario(usuario);
-//			
-//			return this.buildResponse(retorno);
-//		}
-//		else {
-//			return this.buildErrorResponse(404, "Usuário não encontrado");
-//		}
-//	}
-//
+
 	@PUT
 	@Path("/{id}")
 	public Response editar(@PathParam("id") Integer id, Produto produto, @Context HttpHeaders httpheaders) {
