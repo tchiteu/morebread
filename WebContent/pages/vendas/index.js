@@ -6,12 +6,12 @@ const template = /*html*/ `
       <!-- TABELA -->
       <v-col cols="8">
         <v-card class="pa-8 text-left custom-border" tile>
-          <h3 class="mb-8">Lista de usuários</h3>
+          <h3 class="mb-8">Últimas vendas realizadas</h3>
 
           <v-data-table 
             class="elevation-2"
             :headers="headers"
-            :items="usuarios"
+            :items="vendas"
             :loading="loading"
             disable-sort
             hide-default-footer
@@ -29,12 +29,8 @@ const template = /*html*/ `
                 </template>
 
                 <v-list :key="item.id">
-                  <v-list-item @click="deletaUsuario(item.id)">
+                  <v-list-item @click="deletaVenda(item.id)">
                     <v-list-item-title >Deletar</v-list-item-title>
-                  </v-list-item>
-
-                  <v-list-item @click="ativarEditar(item.id)">
-                    <v-list-item-title>Editar</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -44,92 +40,80 @@ const template = /*html*/ `
       </v-col>
 
       <!-- CADASTRO -->
-      <v-col v-if="!editar" cols="4">
+      <v-col cols="4">
         <v-card class="pa-8 text-left custom-border" tile>
-          <h3 class="mb-8">Cadastrar usuário</h3>
+          <h3 class="mb-8">Realizar venda</h3>
 
-          <v-form ref="formCadastro">
-            <v-text-field
-              v-model="nome"
-              label="Nome completo"
-              :rules="[campoObrigatorio]"
-              placeholder=" "
-            />
+          <v-form ref="formProduto" class="mb-3">
+            <v-row dense>
+              <v-col cols="8">
+                <v-autocomplete
+                  v-model="produto"
+                  label="Selecione um produto"
+                  :items="produtos"
+                  item-text="nome"
+                  :return-object="true"
+                  :rules="[campoObrigatorio]"
+                  placeholder=" "
+                />
+              </v-col>
 
-            <v-text-field
-              v-model="email"
-              label="E-mail"
-              :rules="[campoObrigatorio]"
-              placeholder=" "
-            />
-            
-            <v-select
-              v-model="cargo"
-              label="Cargo"
-              :rules="[campoObrigatorio]"
-              :items="['Atendente', 'Padeiro', 'Gerente']"
-            />
-
-            <v-text-field
-              type="password"
-              v-model="senha"
-              :rules="[campoObrigatorio]"
-              label="Senha"
-              placeholder=" "
-            />
+              <v-col cols="4">
+                <v-text-field
+                  type="number"
+                  v-model="quantidade"
+                  label="Quantidade"
+                  :rules="[campoObrigatorio]"
+                  placeholder=" "
+                />
+              </v-col>
+            </v-row>
           </v-form>
 
-          <v-btn
-            :loading="loadingBtn"
+          <v-btn 
             block
-            @click="cadastraUsuario"
-            color="success"btn
-          >Cadastrar</v-btn>
-        </v-card>
-      </v-col>
-
-      <!-- EDIÇÃO -->
-      <v-col v-else cols="4">
-        <v-card class="pa-8 text-left custom-border" tile>
-          <span @click="voltar()" class="mdi mdi-close fecha-editar"></span>
-          <h3 class="mb-8">Editar usuário</h3>
-
-          <v-form ref="formEditar">
-            <v-text-field
-              v-model="nome"
-              label="Nome completo"
-              :rules="[campoObrigatorio]"
-              placeholder=" "
-            />
-
-            <v-text-field
-              v-model="email"
-              label="E-mail"
-              :rules="[campoObrigatorio]"
-              placeholder=" "
-            />
-            
-            <v-select
-              v-model="cargo"
-              label="Cargo"
-              :rules="[campoObrigatorio]"
-              :items="['Atendente', 'Padeiro', 'Gerente']"
-            />
-
-            <v-text-field
-              type="password"
-              v-model="senha"
-              label="Senha"
-              placeholder=" "
-            />
-          </v-form>
+            @click="() => adicionarProduto()"
+          >
+          Adicionar produto
+          </v-btn>
+          
+          <div v-if="produtosAdicionados.length > 0">
+            <v-simple-table>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">
+                      Produto
+                    </th>
+                    <th class="text-left">
+                      Quantidade
+                    </th>
+                    <th class="text-left">
+                      Valor
+                    </th>
+                    <th class="text-left">
+                      
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="produto in produtosAdicionados" :key="produto.id"
+                  >
+                    <td>{{ produto.nome }}</td>
+                    <td>{{ produto.quantidade }}</td>
+                    <td>{{ produto.valor }}</td>
+                    <td> X </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </div>
 
           <v-btn
-            :loading="loadingBtn"
             block
-            @click="editaUsuario"
             color="success"
-          >Editar</v-btn>
+          >Salvar</v-btn>
         </v-card>
       </v-col>
     </v-row>
@@ -140,134 +124,65 @@ export default {
 	template,
 
 	data: () => ({
-		usuarios: [],
-		nome: "",
-		email: "",
-		cargo: "",
-		senha: "",
-
-		headers: [
-			{ text: "ID", value: "id" },
-			{ text: "Nome", value: "nome" },
-			{ text: "E-mail", value: "email" },
-			{ text: "Cargo", value: "cargo" },
-			{ text: "Ações", value: "acoes", width: "7%" }
-		],
+		vendas: [],
+    produto: [],
+    produtos: [],
+    produtosAdicionados: [],
+    quantidade: null,
+    
+    headers: [
+      { text: "ID", value: "id" },
+			// { text: "Nome", value: "nome" },
+			// { text: "Valor", value: "valor_formatado" },
+			// { text: "Quantidade", value: "quantidade" },
+    ],
 
 		// Rules
 		campoObrigatorio: v => !!v || 'Campo obrigatório',
 
-		dropdown: false,
 		loading: false,
-		loadingBtn: false,
-		editar: false,
-		editar_id: null
 	}),
 
 	mounted() {
-		this.buscaUsuarios();
+		this.buscaProdutos();
 	},
 
 	methods: {
-		async buscaUsuarios() {
+		async buscaProdutos() {
 			this.loading = true;
 
-			await axios.get("/usuarios")
+			await axios.get("/produtos")
 			.then(retorno => {
-        this.usuarios = retorno.data.usuarios;
+        this.produtos = retorno.data.produtos;
 			})
-			.catch(err => {
-				this.$toast.erro("Erro ao buscar usuários.");
+			.catch(() => {
+				this.$toasted.error("Erro ao buscar produtos.");
 			})
 			.finally(this.loading = false)
 		},
 
-		async cadastraUsuario() {
-			if(!this.$refs.formCadastro.validate()){
-				return false;
-			}
-			this.loadingBtn = true;
+		async adicionarProduto() {
+      const produto = {
+        id: this.produto.id,
+        nome: this.produto.nome,
+        quantidade: this.quantidade,
+        valor: this.produto.valor
+      }
+      
+      const index = this.produtosAdicionados.findIndex(produtoAdicionado => {
+        produtoAdicionado.id == produto.id
+      })
 
-			const {nome, email, cargo, senha} = this; 
+      if (index >= 0) {
+        this.produtosAdicionados[index].quantidade += this.quantidade
+      }
+      else {
+        this.produtosAdicionados.push(produto);
+      }
 
-			const body = {
-				nome,
-				email,
-				cargo,
-				senha
-			}
-
-			await axios.post("/usuarios", body)
-				.then(() => {
-					this.buscaUsuarios();
-					this.$refs.formCadastro.reset();
-				})
-				.catch(() => {
-					return false;
-				})
-				.finally(() => {
-					this.loadingBtn = false;
-				})
 		},
 
-		async deletaUsuario(id) {
-			await axios.delete(`/usuarios/${id}`)
-				.then(retorno => {
-					if(retorno) {
-						this.buscaUsuarios();
-					}
-				})
-				.catch(err => {
-					if(err) return false;
-				})
-		},
-
-		async editaUsuario() {
-			if(!this.$refs.formEditar.validate()){
-				return false;
-			}
-			this.loadingBtn = true;
-
-			const {nome, email, cargo, senha} = this; 
-
-			const body = {
-				nome,
-				email,
-				cargo,
-				senha
-			}
-
-			await axios.put(`/usuarios/${this.editar_id}`, body)
-				.then(retorno => {
-					if(retorno) {
-						this.buscaUsuarios();
-						this.editar = false;
-					}
-				})
-				.catch(err => {
-					if(err) return false;
-				})
-				.finally(this.loadingBtn = false)
-		},
-
-		async ativarEditar(id) {
-			if(id) {
-				this.editar_id = id;
-				this.editar = true;
-
-				const usuarioEditar = this.usuarios.find(usuario => {
-					return usuario.id == id;
-				})
-
-				this.nome = usuarioEditar.nome;
-				this.email = usuarioEditar.email;
-				this.cargo = usuarioEditar.cargo;
-				this.senha = usuarioEditar.senha;
-			}
-		},
-
-		async voltar() {
-			this.editar = false;
-		}
+		async removerProduto(id) {
+    }
 	}
 }

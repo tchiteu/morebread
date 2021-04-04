@@ -177,7 +177,7 @@ export default {
         this.usuarios = retorno.data.usuarios;
 			})
 			.catch(err => {
-				this.$toast.erro("Erro ao buscar usuários.");
+				this.$toasted.error("Erro ao buscar usuários.");
 			})
 			.finally(this.loading = false)
 		},

@@ -1,21 +1,16 @@
 import Login from '../pages/login/index.js';
 import Usuarios from '../pages/usuarios/index.js';
 import Produtos from '../pages/produtos/index.js';
+import Vendas from '../pages/vendas/index.js';
 
 axios.defaults.baseURL = 'http://localhost:8080/morebread/rest';
-
-axios.interceptors.request.use((config) => {
-	const token = localStorage.getItem("token");
-	config.headers.Authorization =  token;
-
-	return config;
-});
 
 const router = new VueRouter({
   routes: [
 		{ path: '/login', component: Login },
 		{ path: '/usuarios', component: Usuarios },
-		{ path: '/produtos', component: Produtos }
+		{ path: '/produtos', component: Produtos },
+		{ path: '/vendas', component: Vendas }
   ]
 })
 
@@ -27,19 +22,13 @@ Vue.use(Toasted)
 Vue.use(VueCurrencyInput)
 
 Vue.toasted.register('error',
-	(payload) => {
-		return payload
-	},
 	{
 		type: 'error',
-		duration: 4000
+		duration: 3000
 	}
 )
 
 Vue.toasted.register('success',
-	(payload) => {
-		return payload
-	},
 	{
 		type: 'success',
 		duration: 3000
