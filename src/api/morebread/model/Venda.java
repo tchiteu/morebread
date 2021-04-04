@@ -36,11 +36,7 @@ public class Venda {
   }
   
   public void setProdutos(List<Produto> produtos) {
-	  this.produtos = produtos;
-  }
-  
-  public List<Produto> getProdutos () {
-	  return this.produtos;
+	  
   }
   
   public String getDtRealizada() {
