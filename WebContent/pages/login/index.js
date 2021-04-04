@@ -62,11 +62,13 @@ export default {
 			.then(retorno => {
 				if(retorno) {
           const token = retorno.data.token;
-          localStorage.setItem("token", token);
+          const usuario = retorno.data.usuario;
+          $auth.setToken(token);
+          $auth.setUser(usuario);
 					this.$router.push("/usuarios");
 				}
 			})
-			.catch(err => {
+			.catch(() => {
 				this.$toasted.error("Erro ao realizar login");
 			})
 			.finally(this.loading = false);

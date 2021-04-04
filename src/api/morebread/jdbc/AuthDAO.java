@@ -31,9 +31,12 @@ public class AuthDAO {
       ResultSet resultado = stmt.executeQuery();
       
       if (resultado.next()) {
-        retorno.setErro(false);
+    	usuario.setId(resultado.getInt("id"));
         String token = geraToken(usuario);
+        
+        retorno.setErro(false);
         retorno.setToken(token);
+        retorno.setUsuario(usuario);
       }
     }
     catch (SQLException ex) {

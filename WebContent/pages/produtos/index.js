@@ -167,11 +167,8 @@ export default {
 				this.produtos = produtos.map(produto => {
 					let valor = produto.valor.toFixed(2).toString();
 					valor = valor.replace(".", ",");
-					
-					if (produto.valor > 9999) {
-						valor = valor.insert(2, ".");
-					}
- 					else if (produto.valor > 999) {
+
+ 					if (produto.valor > 999) {
 						valor = valor.insert(1, ".");
 					}
 
