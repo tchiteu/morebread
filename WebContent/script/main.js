@@ -44,6 +44,19 @@ String.prototype.insert = function(index, string) {
   return string + this;
 };
 
+Array.prototype.removeIf = function(callback) {
+	let i = 0;
+
+	while (i < this.length) {
+		if (callback(this[i], i)) {
+			this.splice(i, 1);
+		}
+		else {
+			++i;
+		}
+	}
+};
+
 new Vue({
 	router,
 	el: '#app',

@@ -7,32 +7,33 @@ const $auth = new Vue({
   },
   methods: {
     setUser(usuario) {
-      this.user = usuario
-      sessionStorage.setItem('user', btoa(JSON.stringify(usuario)))
+      this.user = usuario;
+      sessionStorage.setItem('user', btoa(JSON.stringify(usuario)));
     },
 
     setToken(token) {
-      sessionStorage.setItem('token', token)
-      axios.defaults.headers.common['Authorization'] = token
+      sessionStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = token;
     },
 
     isLoggedIn() {
       if (sessionStorage.getItem('user')) {
-        axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('token')
-        return true
+        axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('token');
+        return true;
       }
       
-      return false
+      return false;
     },
 
     async logout() {
-      this.loggedIn = false
+      this.loggedIn = false;
+      
       await axios.delete('/auth/logout')
-        .then(() => {
-          sessionStorage.removeItem('token')
-          sessionStorage.removeItem('user')
-          axios.defaults.headers.common['Authorization'] = ''
-        })
+      .then(() => {
+        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('user')
+        axios.defaults.headers.common['Authorization'] = ''
+      })
     }
   }
 })
