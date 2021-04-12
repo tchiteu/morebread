@@ -4,7 +4,7 @@ const template = /*html*/ `
 
     <v-row class="mt-6 pa-4">
       <!-- TABELA -->
-      <v-col cols="8">
+      <v-col cols="7">
         <v-card class="pa-8 text-left custom-border" tile>
           <h3 class="mb-8">Últimas vendas realizadas</h3>
 
@@ -15,6 +15,7 @@ const template = /*html*/ `
             :loading="loading"
             disable-sort
             hide-default-footer
+            no-data-text="Nada encontrado..."
           >
             <template v-slot:item.acoes="{ item }">
               <v-menu top close-on-click>
@@ -40,7 +41,7 @@ const template = /*html*/ `
       </v-col>
 
       <!-- CADASTRO -->
-      <v-col cols="4">
+      <v-col cols="5">
         <v-card class="pa-8 text-left custom-border" tile>
           <h3 class="mb-8">Realizar venda</h3>
 
@@ -72,38 +73,44 @@ const template = /*html*/ `
 
           <v-btn 
             block
-            @click="() => adicionarProduto()"
+            @click="adicionaProduto"
+            class="mb-1"
           >
           Adicionar produto
           </v-btn>
           
           <div v-if="produtosAdicionados.length > 0">
-            <v-simple-table>
+            <v-simple-table class="mb-2 tabela-produtos">
               <template v-slot:default>
                 <thead>
                   <tr>
-                    <th class="text-left">
+                    <th class="text-center">
                       Produto
                     </th>
-                    <th class="text-left">
+                    <th class="text-center">
                       Quantidade
                     </th>
-                    <th class="text-left">
+                    <th class="text-center">
                       Valor
                     </th>
-                    <th class="text-left">
-                      
+                    <th class="text-center">
+                      Remover
                     </th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  <tr
-                    v-for="produto in produtosAdicionados" :key="produto.id"
-                  >
-                    <td>{{ produto.nome }}</td>
-                    <td>{{ produto.quantidade }}</td>
-                    <td>{{ produto.valor }}</td>
-                    <td> X </td>
+                  <tr v-for="produto in produtosAdicionados" :key="produto.id">
+                    <td class="text-center">{{ produto.nome }}</td>
+                    <td class="text-center">{{ produto.quantidade }}</td>
+                    <td class="text-center">R$ {{ produto.valor }}</td>
+                    
+                    <td class="text-center">
+                      <span 
+                        @click="removeProduto(produto.id)"
+                        class="mdi mdi-close remove-btn"
+                      />
+                    </td>
                   </tr>
                 </tbody>
               </template>
@@ -111,7 +118,9 @@ const template = /*html*/ `
           </div>
 
           <v-btn
+            v-if="produtosAdicionados.length > 0"
             block
+            @click="realizaVenda"
             color="success"
           >Salvar</v-btn>
         </v-card>
@@ -158,23 +167,29 @@ export default {
 			.catch(() => {
 				this.$toasted.error("Erro ao buscar produtos.");
 			})
-			.finally(this.loading = false)
+			.finally(this.loading = false);
 		},
 
-		async adicionarProduto() {
+		async adicionaProduto() {
+      // Validação simples
+      if (this.quantidade < 1 || !this.produto.nome) {
+        return false;
+      }
+
       const produto = {
         id: this.produto.id,
         nome: this.produto.nome,
         quantidade: this.quantidade,
         valor: this.produto.valor
       }
-      
+
       const index = this.produtosAdicionados.findIndex(produtoAdicionado => {
-        produtoAdicionado.id == produto.id
+        return produtoAdicionado.id == produto.id;
       })
 
       if (index >= 0) {
-        this.produtosAdicionados[index].quantidade += this.quantidade
+        let quantidade = this.produtosAdicionados[index].quantidade;
+        this.produtosAdicionados[index].quantidade = Number(quantidade) + Number(this.quantidade);
       }
       else {
         this.produtosAdicionados.push(produto);
@@ -182,7 +197,37 @@ export default {
 
 		},
 
-		async removerProduto(id) {
+		async removeProduto(produto_id) {
+      this.produtosAdicionados.removeIf(produto => {
+        return produto.id == produto_id;
+      })
+    },
+
+    async realizaVenda() {
+      let usuarioId = $auth.user.id
+      let valorTotal = 0
+      
+      this.produtosAdicionados.forEach(produto => {
+        valorTotal += produto.valor * produto.quantidade
+      })
+
+      const body = {
+        usuarioId,
+        valorTotal,
+        produtos: this.produtosAdicionados
+      }
+
+      await axios.post('/vendas', body)
+      .then(() => {
+        this.$toasted.success("Venda realizada com sucesso!");
+
+        // this.buscaVendas();
+        this.produtosAdicionados = [];
+        this.valorTotal = 0;
+      })
+      .catch(() => {
+        this.$toasted.error("Erro ao realizar venda")
+      })
     }
 	}
 }

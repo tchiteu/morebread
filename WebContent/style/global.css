@@ -52,3 +52,14 @@
 .form-login {
   border-top: solid 2px #291919;
 }
+
+.remove-btn {
+  cursor: pointer;
+  color: red;
+}
+
+.tabela-produtos {
+  position: relative;
+  max-height: 200px;
+  overflow: auto;
+}
