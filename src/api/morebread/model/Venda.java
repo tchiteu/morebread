@@ -35,8 +35,12 @@ public class Venda {
 	this.usuarioId = usuarioId;
   }
   
+  public List<Produto> getProdutos() {
+	  return this.produtos;
+  }
+
   public void setProdutos(List<Produto> produtos) {
-	  
+	  this.produtos = produtos;
   }
   
   public String getDtRealizada() {
