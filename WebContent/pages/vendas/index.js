@@ -140,10 +140,10 @@ export default {
     quantidade: null,
     
     headers: [
-      { text: "ID", value: "id" },
-			// { text: "Nome", value: "nome" },
-			// { text: "Valor", value: "valor_formatado" },
-			// { text: "Quantidade", value: "quantidade" },
+			{ text: "Data", value: "dataRealizada" },
+			{ text: "Usuário", value: "usuarioNome" },
+			{ text: "Valor Total", value: "valorTotal" },
+      { text: "Ações", value: "acoes" }
     ],
 
 		// Rules
@@ -153,13 +153,26 @@ export default {
 	}),
 
 	mounted() {
+    this.hello();
+    this.buscaVendas();
 		this.buscaProdutos();
 	},
 
 	methods: {
-		async buscaProdutos() {
+    async buscaVendas() {
 			this.loading = true;
 
+      await axios.get("/vendas")
+      .then(retorno => {
+        this.vendas = retorno.data.vendas;
+      })
+      .catch(() => {
+        this.$toasted.error("Erro ao buscar as vendas");
+      })
+      .finally(() => this.loading = false);
+    },
+
+		async buscaProdutos() {
 			await axios.get("/produtos")
 			.then(retorno => {
         this.produtos = retorno.data.produtos;
@@ -167,7 +180,6 @@ export default {
 			.catch(() => {
 				this.$toasted.error("Erro ao buscar produtos.");
 			})
-			.finally(this.loading = false);
 		},
 
 		async adicionaProduto() {
@@ -205,6 +217,7 @@ export default {
 
     async realizaVenda() {
       let usuarioId = $auth.user.id
+      let usuarioNome = $auth.user.nome
       let valorTotal = 0
       
       this.produtosAdicionados.forEach(produto => {
@@ -213,20 +226,21 @@ export default {
 
       const body = {
         usuarioId,
+        usuarioNome,
         valorTotal,
         produtos: this.produtosAdicionados
       }
 
-      await axios.post('/vendas', body)
+      await axios.post("/vendas", body)
       .then(() => {
         this.$toasted.success("Venda realizada com sucesso!");
 
-        // this.buscaVendas();
+        this.buscaVendas();
         this.produtosAdicionados = [];
         this.valorTotal = 0;
       })
       .catch(() => {
-        this.$toasted.error("Erro ao realizar venda")
+        this.$toasted.error("Erro ao realizar venda");
       })
     }
 	}

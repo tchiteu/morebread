@@ -1,8 +1,8 @@
 package api.morebread.rest;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -28,7 +28,7 @@ public class Vendas extends UtilRest {
 			return this.unauthorizedResponse();
 		}
 		
-		Retorno retorno = vendaDAO.cadastraVenda(venda);
+		Retorno retorno = vendaDAO.cadastrar(venda);
 		
 		if (!retorno.getErro()) {
 			retorno.setStatusCode(200);
@@ -37,6 +37,23 @@ public class Vendas extends UtilRest {
 		}
 		else {
 			return this.buildErrorResponse(404, "Erro ao cadastrar venda.");
+		}
+	}
+	
+	@GET
+	public Response buscaVendas(@Context HttpHeaders httpheaders) {
+		if (!authDAO.verificaToken(httpheaders.getHeaderString("Authorization"))) {
+			return this.unauthorizedResponse();
+		}
+		
+		Retorno retorno = vendaDAO.listar();
+		
+		if (!retorno.getErro()) {
+			retorno.setStatusCode(200);
+			return this.buildResponse(retorno);
+		}
+		else {
+			return this.buildErrorResponse(404, "Erro ao buscar vendas.");
 		}
 	}
 }

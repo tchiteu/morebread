@@ -63,8 +63,11 @@ export default {
 				if(retorno) {
           const token = retorno.data.token;
           const usuario = retorno.data.usuario;
+          delete usuario.senha;
+          
           $auth.setToken(token);
           $auth.setUser(usuario);
+
 					this.$router.push("/usuarios");
 				}
 			})
