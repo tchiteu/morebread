@@ -1,9 +1,11 @@
 package api.morebread.rest;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -54,6 +56,21 @@ public class Vendas extends UtilRest {
 		}
 		else {
 			return this.buildErrorResponse(404, "Erro ao buscar vendas.");
+		}
+	}
+	
+	@DELETE
+	@Path("/{id}")
+	public Response DeletaVenda(@PathParam("id") Integer id, @Context HttpHeaders httpheaders) {
+		if (!authDAO.verificaToken(httpheaders.getHeaderString("Authorization"))) {
+			return this.unauthorizedResponse();
+		}
+		
+		if(vendaDAO.deletar(id)) {
+			return this.buildResponse(200, "Venda deletada com sucesso!");
+		}	
+		else {
+			return this.buildErrorResponse(404, "Erro ao deletar venda.");
 		}
 	}
 }

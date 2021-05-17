@@ -33,6 +33,7 @@ public class AuthDAO {
       if (resultado.next()) {
     	usuario.setId(resultado.getInt("id"));
     	usuario.setNome(resultado.getString("nome"));
+    	usuario.setSenha(null);
         String token = geraToken(usuario);
         
         retorno.setErro(false);

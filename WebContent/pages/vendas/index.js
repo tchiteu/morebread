@@ -12,7 +12,7 @@ const template = /*html*/ `
             class="elevation-2"
             :headers="headers"
             :items="vendas"
-            :loading="loading"
+            :loading="carregando"
             disable-sort
             hide-default-footer
             no-data-text="Nada encontrado..."
@@ -31,10 +31,18 @@ const template = /*html*/ `
 
                 <v-list :key="item.id">
                   <v-list-item @click="deletaVenda(item.id)">
-                    <v-list-item-title >Deletar</v-list-item-title>
+                    <v-list-item-title>Deletar</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
+            </template>
+
+            <template v-slot:item.valorTotal="{ item }">
+              R$ {{ item.valorTotal }}
+            </template>
+
+            <template v-slot:item.dataRealizada="{ item }">
+              {{ formataData(item.dataRealizada) }}
             </template>
           </v-data-table>
         </v-card>
@@ -120,6 +128,7 @@ const template = /*html*/ `
           <v-btn
             v-if="produtosAdicionados.length > 0"
             block
+            :loading="carregandoCadastro"
             @click="realizaVenda"
             color="success"
           >Salvar</v-btn>
@@ -149,18 +158,18 @@ export default {
 		// Rules
 		campoObrigatorio: v => !!v || 'Campo obrigatório',
 
-		loading: false,
+		carregando: false,
+    carregandoCadastro: false
 	}),
 
 	mounted() {
-    this.hello();
     this.buscaVendas();
 		this.buscaProdutos();
 	},
 
 	methods: {
     async buscaVendas() {
-			this.loading = true;
+			this.carregando = true;
 
       await axios.get("/vendas")
       .then(retorno => {
@@ -169,7 +178,7 @@ export default {
       .catch(() => {
         this.$toasted.error("Erro ao buscar as vendas");
       })
-      .finally(() => this.loading = false);
+      .finally(() => this.carregando = false);
     },
 
 		async buscaProdutos() {
@@ -242,6 +251,21 @@ export default {
       .catch(() => {
         this.$toasted.error("Erro ao realizar venda");
       })
+    },
+    
+    async deletaVenda(id) {
+      this.carregandoCadastro = true;
+
+      await axios.delete(`/vendas/${id}`)
+      .then(() => {
+        this.$toasted.success("Venda deletada com sucesso!");
+
+        this.buscaVendas();
+      })
+      .catch(() => {
+        this.$toasted.error("Erro ao deletar venda");
+      })
+      .finally(() => this.carregandoCadastro = false)
     }
 	}
 }

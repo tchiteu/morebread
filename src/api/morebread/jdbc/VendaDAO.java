@@ -13,7 +13,7 @@ import java.util.List;
 import api.morebread.model.Venda;
 import api.morebread.model.Produto;
 import api.morebread.model.Retorno;
-import api.morebread.model.Usuario;
+import api.morebread.model.DetalhesVenda;
 import api.morebread.connection.ConnectionFactory;
 
 public class VendaDAO {
@@ -41,15 +41,19 @@ public class VendaDAO {
       
       if (rs.next()) {
     	Integer venda_id;
+    	Float valorVendaProduto;
+    	
 	    venda_id = rs.getInt(1);
 	    
 	    for (Produto produto : venda.getProdutos()) {
-	      stmt = this.conexao.prepareStatement("INSERT INTO detalhes_venda (venda_id, produto_id, quantidade, valor) VALUES (?, ?, ?, ?)");
+    	  valorVendaProduto = produto.getQuantidade() * produto.getValor(); 
+	      stmt = this.conexao.prepareStatement("INSERT INTO detalhes_venda (venda_id, produto_id, produto_nome, quantidade, valor) VALUES (?, ?, ?, ?, ?)");
 	      
 	      stmt.setInt(1, venda_id);
 	      stmt.setInt(2, produto.getId());
-	      stmt.setInt(3, produto.getQuantidade());
-	      stmt.setFloat(4, produto.getValor());
+	      stmt.setString(3, produto.getNome());
+	      stmt.setInt(4, produto.getQuantidade());
+	      stmt.setFloat(5, valorVendaProduto);
 	      
 	      stmt.execute();
 	    }
@@ -93,6 +97,80 @@ public class VendaDAO {
         ConnectionFactory.closeConnection(conexao, stmt);
     }
 
+    return retorno;
+  }
+  
+  public Boolean deletar(Integer id) {
+	PreparedStatement stmt = null;
+	Boolean retorno = false;
+
+    try {
+      // Deleta os detalhes da venda
+	  stmt = conexao.prepareStatement("DELETE FROM detalhes_venda WHERE venda_id = ?");
+      stmt.setInt(1, id);
+
+	  int delete = stmt.executeUpdate();
+	  stmt.close();
+	  
+	  if (delete == 0) {
+		  return retorno;
+	  }
+	      
+	  // Deleta a venda	      
+	  stmt = conexao.prepareStatement("DELETE FROM vendas WHERE id = ?");
+	  stmt.setInt(1, id);
+
+	  stmt.executeUpdate();
+	          
+	  retorno = true;
+	} 
+    catch(SQLException ex) {
+	  ex.printStackTrace();
+	  retorno = false;
+	}
+    finally {
+      ConnectionFactory.closeConnection(conexao, stmt);
+	}
+	    
+	return retorno;
+  }
+  
+  public Retorno gerarRelatorio(String dt_inicio, String dt_fim) {
+    Retorno retorno = new Retorno(false);
+    PreparedStatement stmt = null;
+    
+    List<DetalhesVenda> detalhesVendas = new ArrayList<DetalhesVenda>();
+    
+    try {
+      String query = ("SELECT vendas.id, vendas.usuario_nome, vendas.data_realizada, detalhes_venda.produto_id, detalhes_venda.produto_nome, detalhes_venda.quantidade, detalhes_venda.valor \n"
+      		+ " FROM vendas INNER JOIN detalhes_venda ON vendas.id = detalhes_venda.venda_id AND DATE(data_realizada) >= ? AND DATE(data_realizada) <= ?");
+      stmt = conexao.prepareStatement(query);
+      stmt.setString(1, dt_inicio);
+      stmt.setString(2, dt_fim);
+      
+      ResultSet resultado = stmt.executeQuery();
+
+      while (resultado.next()) {
+        DetalhesVenda detalhesVenda = new DetalhesVenda();
+
+        detalhesVenda.setVendaId(resultado.getInt("id"));
+        detalhesVenda.setDataRealizada(resultado.getString("data_realizada"));
+        detalhesVenda.setUsuarioNome(resultado.getString("usuario_nome"));
+        detalhesVenda.setProdutoNome(resultado.getString("produto_nome"));
+        detalhesVenda.setQuantidade(resultado.getInt("quantidade"));
+        detalhesVenda.setValor(resultado.getFloat("valor"));
+
+        detalhesVendas.add(detalhesVenda);
+      }
+      
+      retorno.setDetalhesVendas(detalhesVendas);
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        retorno.setErro(true);
+    } finally {
+        ConnectionFactory.closeConnection(conexao, stmt);
+    }
+	    
     return retorno;
   }
 }

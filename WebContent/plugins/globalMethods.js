@@ -1,14 +1,19 @@
-const MyPlugin = {}
+const GlobalMethods = {}
 
-MyPlugin.install = function (Vue) {
+GlobalMethods.install = (Vue) => {
   Vue.mixin({
     methods: {
-      hello() {
-        alert("BOm dai dacalr")
+      formataData(data) {
+        let dataArray = data.split('-');
+        let ano = dataArray[0];
+        let mes = dataArray[1];
+        let dia = dataArray[2];
+      
+        return `${dia}/${mes}/${ano}`;
       }
     }
   })
 
 }
 
-export default MyPlugin
+export default GlobalMethods

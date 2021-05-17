@@ -25,6 +25,10 @@ const $auth = new Vue({
       return false;
     },
 
+    isManager() {
+      return !!this.user?.gestor;
+    },
+
     async logout() {
       this.loggedIn = false;
       

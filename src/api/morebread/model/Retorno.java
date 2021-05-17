@@ -13,6 +13,7 @@ public class Retorno {
   private List<Usuario> usuarios;
   private List<Produto> produtos;
   private List<Venda> vendas;
+  private List<DetalhesVenda> detalhesVendas;
   private Usuario usuario;
   
   public Retorno () {
@@ -113,17 +114,24 @@ public class Retorno {
     return this.mensagem;
   }
   
-  // Utils
+  public List<Venda> getVendas() {
+	  return vendas;
+  }
+  
+  public void setVendas(List<Venda> vendas) {
+	  this.vendas = vendas;
+  }
+  
+  public List<DetalhesVenda> getDetalhesVendas() {
+	  return detalhesVendas;
+  }
+  
+  public void setDetalhesVendas(List<DetalhesVenda> detalhesVendas) {
+	  this.detalhesVendas = detalhesVendas;
+  }
+  
   public void toResponse() {
 	this.status_code = null;
 	this.erro = null;
   }
-
-public List<Venda> getVendas() {
-	return vendas;
-}
-
-public void setVendas(List<Venda> vendas) {
-	this.vendas = vendas;
-}
 }
