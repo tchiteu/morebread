@@ -8,8 +8,9 @@ public class Venda {
   
   private Float valorTotal;
   private Integer usuarioId;
+  private String usuarioNome;
   private List<Produto> produtos = new ArrayList<Produto>();
-  private String dtRealizada;
+  private String dataRealizada;
 
   public void setId(Integer id) {
     this.id = id;
@@ -43,11 +44,19 @@ public class Venda {
 	  this.produtos = produtos;
   }
   
-  public String getDtRealizada() {
-	return this.dtRealizada;
+  public String getDataRealizada() {
+	return this.dataRealizada;
   }
   
-  public void setDtRealizada(String dtRealizado) {
-	this.dtRealizada = dtRealizado;
+  public void setDataRealizada(String dtRealizado) {
+	this.dataRealizada = dtRealizado;
+  }
+
+  public String getUsuarioNome() {
+	return usuarioNome;
+  }
+
+  public void setUsuarioNome(String usuarioNome) {
+	this.usuarioNome = usuarioNome;
   }
 }

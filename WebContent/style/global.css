@@ -4,6 +4,10 @@
   font-family: 'Roboto', sans-serif;
 }
 
+body {
+  width: 100vw;
+}
+
 .custom-border {
   border-top: solid 4px #dca66e !important;
 }
@@ -38,6 +42,12 @@
   -1px -1px 0 #0f0f0f,
   1px -1px 0 #0f0f0f,
   -1px 1px 0 #0f0f0f;
+}
+.m-header .header-items {
+  display: flex;
+  width: 30%;
+  justify-content: space-between;
+  margin-left: 80px;
 }
 
 .container-login {

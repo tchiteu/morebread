@@ -21,7 +21,7 @@ public class AuthDAO {
     Retorno retorno = new Retorno(true);
 
     try {
-      stmt = conexao.prepareStatement("SELECT id FROM usuarios WHERE email = ? AND senha = ?;");
+      stmt = conexao.prepareStatement("SELECT id, nome FROM usuarios WHERE email = ? AND senha = ?;");
       
       String senhaCripto = criptografaSenha(usuario.getSenha());
 
@@ -32,6 +32,8 @@ public class AuthDAO {
       
       if (resultado.next()) {
     	usuario.setId(resultado.getInt("id"));
+    	usuario.setNome(resultado.getString("nome"));
+    	usuario.setSenha(null);
         String token = geraToken(usuario);
         
         retorno.setErro(false);

@@ -2,6 +2,9 @@ import Login from '../pages/login/index.js';
 import Usuarios from '../pages/usuarios/index.js';
 import Produtos from '../pages/produtos/index.js';
 import Vendas from '../pages/vendas/index.js';
+import Relatorio from '../pages/relatorio/index.js';
+
+import GlobalMethods from '../plugins/globalMethods.js';
 
 axios.defaults.baseURL = 'http://localhost:8080/morebread/rest';
 
@@ -10,7 +13,8 @@ const router = new VueRouter({
 		{ path: '/login', component: Login },
 		{ path: '/usuarios', component: Usuarios },
 		{ path: '/produtos', component: Produtos },
-		{ path: '/vendas', component: Vendas }
+		{ path: '/vendas', component: Vendas },
+		{ path: '/relatorio', component: Relatorio }
   ]
 })
 
@@ -18,8 +22,9 @@ import Header from '../components/general/Header.js';
 
 Vue.component('m-header', Header);
 
-Vue.use(Toasted)
-Vue.use(VueCurrencyInput)
+Vue.use(Toasted);
+Vue.use(VueCurrencyInput);
+Vue.use(GlobalMethods);
 
 Vue.toasted.register('error',
 	{

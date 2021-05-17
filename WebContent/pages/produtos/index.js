@@ -230,7 +230,7 @@ export default {
 			}
 			this.loadingBtn = true;
 
-			let { nome, valor, quantidade } = this; 
+			let { nome, valor, quantidade } = this;
 
 			valor = valor.replace(".", "");
 			valor = valor.replace(",", ".");
