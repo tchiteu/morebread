@@ -65,6 +65,15 @@ const template = /*html*/ `
               R$ {{ item.valor.toFixed(2) }}
             </template>
           </v-data-table>
+
+          <v-btn
+            @click="exportaPDF"
+            color="blue"
+            class="mt-4"
+            :disabled="!detalhesVendas[0]"
+          >
+            Exportar PDF
+          </v-btn>
         </v-card>
       </v-col>
     </v-row>
@@ -80,6 +89,8 @@ export default {
     menu: false,
 		detalhesVendas: [],
     carregando: false,
+    valorTotalVendas: "R$ 0",
+    quantidadeTotalVendas: 0,
     
     headers: [
       { text: "Venda ID", value: "vendaId" },
@@ -108,7 +119,110 @@ export default {
     },
 
     salvaDatas() {
-      this.datas = this.datas
+      this.datas = this.datas;
+    },
+
+    calculaTotais() {
+      let cont = 0;
+      let valorTotal = 0;
+      let detalheAntigo = {};
+
+      this.detalhesVendas.forEach(detalhe => {
+        valorTotal += detalhe.valor;
+
+        if(detalheAntigo?.vendaId != detalhe.vendaId) {
+          cont++;
+        }
+
+        detalheAntigo = detalhe;
+      })
+
+      this.valorTotalVendas = `R$ ${valorTotal}`;
+      this.quantidadeTotalVendas = cont;
+    },
+
+    exportaPDF() {
+      const nomeArquivo = "relatorio_vendas";
+      
+      // Monta o cabeçalho (colunas)
+      const colunas = this.headers.map(column => {
+        return column.text;
+      })
+      
+      // Ordena os valores de cada linha
+      const linhas = this.detalhesVendas.map(detalhe => {
+        let linha = [];
+        
+        for (const chave in detalhe) {
+          switch (chave) {
+            case "vendaId": {
+              linha[0] = detalhe[chave];
+              break;
+            }
+            case "dataRealizada": {
+              linha[1] = this.formataData(detalhe[chave]);
+              break;
+            }
+            case "usuarioNome": {
+              linha[2] = detalhe[chave];
+              break;
+            }
+            case "produtoNome": {
+              linha[3] = detalhe[chave];
+              break;
+            }
+            case "quantidade": {
+              linha[4] = detalhe[chave];
+              break;
+            }
+            case "valor": {
+              linha[5] = `R$ ${detalhe[chave].toFixed(2)}`;
+              break;
+            }
+            default: {
+              linha.push(detalhe[chave]);
+            }
+          }
+        }
+        
+        return linha
+      })
+
+      this.calculaTotais()
+
+      // Adiciona os totais na tabela
+      linhas.push([])
+      linhas.push([`Total Vendas: ${this.quantidadeTotalVendas}`, `Valor Total: R$ ${this.valorTotalVendas}`])
+
+      // Salva a data de hoje
+      const data = new Date();
+      const dia = data.getDate();
+      const mes = data.getMonth();
+      const ano = data.getFullYear();
+
+      const dataHoje = `${dia}/${mes}/${ano}`;
+
+      const doc = new jspdf.jsPDF({
+        orientation: 'portrait',
+        unit: 'cm',
+        format: 'A4'
+      })
+
+      doc.autoTable(colunas, linhas, {
+        startY: doc.pageCount > 1? doc.autoTableEndPosY() + 20 : 4,
+        didDrawPage: data => {
+          if(data.pageCount === 1) {
+            doc.setFontSize(10);
+            doc.setFontSize(14)
+            doc.text(`Relatório vendas - Emitido ${dataHoje}`, data.settings.margin.left + 5, 2.2)
+            doc.setFontSize(10);
+            doc.line(data.settings.margin.left, 3, 19.6, 3);
+            doc.setFontSize(10);
+          }
+        }
+      })
+
+      doc.save(`${nomeArquivo}.pdf`)
     }
   },
   watch: {

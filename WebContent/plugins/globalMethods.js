@@ -10,6 +10,13 @@ GlobalMethods.install = (Vue) => {
         let dia = dataArray[2];
       
         return `${dia}/${mes}/${ano}`;
+      },
+
+      logout() {
+        sessionStorage.clear();
+        localStorage.clear();
+        this.$router.push("/login")
+        // Invalidar token no back-end
       }
     }
   })

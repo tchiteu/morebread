@@ -21,7 +21,7 @@ public class AuthDAO {
     Retorno retorno = new Retorno(true);
 
     try {
-      stmt = conexao.prepareStatement("SELECT id, nome FROM usuarios WHERE email = ? AND senha = ?;");
+      stmt = conexao.prepareStatement("SELECT id, nome, cargo FROM usuarios WHERE email = ? AND senha = ?;");
       
       String senhaCripto = criptografaSenha(usuario.getSenha());
 
@@ -34,11 +34,13 @@ public class AuthDAO {
     	usuario.setId(resultado.getInt("id"));
     	usuario.setNome(resultado.getString("nome"));
     	usuario.setSenha(null);
-        String token = geraToken(usuario);
-        
-        retorno.setErro(false);
-        retorno.setToken(token);
-        retorno.setUsuario(usuario);
+      usuario.setCargo(resultado.getString("cargo"));
+
+      String token = geraToken(usuario);
+      
+      retorno.setErro(false);
+      retorno.setToken(token);
+      retorno.setUsuario(usuario);
       }
     }
     catch (SQLException ex) {
