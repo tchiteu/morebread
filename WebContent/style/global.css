@@ -28,11 +28,15 @@ body {
   border-bottom: 5px solid #e6ba8c;
   align-items: center;
 }
-.m-header img {
+.m-header .logo {
+  display: flex;
+  align-items: center;
+}
+.m-header .logo img {
   width: 45px;
   margin-right: 6px;
 }
-.m-header h2 {
+.m-header .logo h2 {
   color: #e6ba8c;
   text-shadow: 2px 0 0 #0f0f0f,
   -2px 0 0 #0f0f0f,
@@ -46,8 +50,14 @@ body {
 .m-header .header-items {
   display: flex;
   width: 30%;
-  justify-content: space-between;
   margin-left: 80px;
+}
+.m-header .header-items * {
+  margin-right: 35px;
+}
+.m-header .btn-logout {
+  margin-left: auto;
+  margin-right: 20px;
 }
 
 .container-login {

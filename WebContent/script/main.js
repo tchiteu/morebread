@@ -1,10 +1,11 @@
+import Header from '../components/general/Header.js';
+import GlobalMethods from '../plugins/globalMethods.js';
+
 import Login from '../pages/login/index.js';
 import Usuarios from '../pages/usuarios/index.js';
 import Produtos from '../pages/produtos/index.js';
 import Vendas from '../pages/vendas/index.js';
 import Relatorio from '../pages/relatorio/index.js';
-
-import GlobalMethods from '../plugins/globalMethods.js';
 
 axios.defaults.baseURL = 'http://localhost:8080/morebread/rest';
 
@@ -18,13 +19,32 @@ const router = new VueRouter({
   ]
 })
 
-import Header from '../components/general/Header.js';
-
-Vue.component('m-header', Header);
-
 Vue.use(Toasted);
 Vue.use(VueCurrencyInput);
 Vue.use(GlobalMethods);
+
+const rotasApenasGestor = ["/relatorio", "/usuarios"];
+
+router.beforeEach((to, from, next) => {
+	let usuario = null
+	if (sessionStorage.getItem('user')) {
+		usuario = JSON.parse(atob(sessionStorage.getItem('user')));
+	}
+
+  if (!sessionStorage.getItem('token') && to.path != "/login" && from.path != "/login") {
+		Vue.toasted.error("Sua sessão expirou!")
+    return router.push("/login").catch(false);
+  }
+
+	if (rotasApenasGestor.includes(to.path) && usuario.cargo != "Gerente") {
+    return router.push("/401").catch(false);
+	}
+
+  return next();
+})
+
+
+Vue.component('m-header', Header);
 
 Vue.toasted.register('error',
 	{

@@ -68,7 +68,7 @@ export default {
           $auth.setToken(token);
           $auth.setUser(usuario);
 
-					this.$router.push("/usuarios");
+					this.$router.push("/produtos");
 				}
 			})
 			.catch(() => {

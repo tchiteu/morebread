@@ -26,7 +26,7 @@ const $auth = new Vue({
     },
 
     isManager() {
-      return !!this.user?.gestor;
+      return this.user?.cargo == "Gerente";
     },
 
     async logout() {
